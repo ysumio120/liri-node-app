@@ -3,25 +3,32 @@ var keys = require("./key.js");
 var Twitter = require('twitter');
 var Spotify = require('spotify');
 var Request = require('request');
+var fs = require('fs');
 
 var commandLine = process.argv;
 
 var command = commandLine[2];
 
-switch (command) {
-	case "my-tweets":
-		myTweets();
-		break;
-	case "spotify-this-song":
-		spotifySong();
-		break;
-	case "movie-this":
-		movieThis();
-		break;
-	case "do-what-it-says":
-		doIt();
-		break;
 
+commands(command);
+
+function commands(command) {
+	switch (command) {
+		case "my-tweets":
+			myTweets();
+			break;
+		case "spotify-this-song":
+			spotifySong();
+			break;
+		case "movie-this":
+			movieThis();
+			break;
+		case "do-what-it-says":
+			doIt();
+			break;
+		default:
+			console.log("ERROR");
+	}
 }
 
 function myTweets() {
@@ -77,8 +84,6 @@ function spotifySong() {
 	    		}
     		}
     	});
- 		//console.log(data.tracks.items[0].name);
-    // Do something with 'data' 
 	});
 }
 
@@ -102,6 +107,14 @@ function movieThis() {
 	});
 }
 function doIt() {
-
+	fs.readFile("random.txt", "utf8", function(err, data) {
+		console.log(data);
+		var comma = data.indexOf(",");
+		var command = data.substring(0, comma);
+		process.argv[3] = data.substring(comma + 1);
+		process.argv[3] = process.argv[3].replace(/\"/g, "");
+		//console.log(process.argv[3]);
+		commands(command);
+	});
 }
 
