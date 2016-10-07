@@ -9,10 +9,12 @@ var commandLine = process.argv;
 
 var command = commandLine[2];
 
-
+// Initial run
 commands(command);
 
 function commands(command) {
+	log(command);
+	log("--------------------------------------");
 	switch (command) {
 		case "my-tweets":
 			myTweets();
@@ -34,13 +36,15 @@ function commands(command) {
 function myTweets() {
 	var client = new Twitter(keys.twitterKeys);
 	var params = {
-		screen_name: "Wintermute1",
+		screen_name: "realDonaldTrump",
 		count: 20
 	};
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 		if (!error) {
 			for(var i = 0; i < tweets.length; i++) {
-				console.log(tweets[i].created_at  + "\n" + tweets[i].text + "\n");
+				var tweet = tweets[i].created_at  + "\n" + tweets[i].text + "\n";
+				log(tweet);
+
 			}
 	  	}
 	});
@@ -60,10 +64,10 @@ function spotifySong() {
     			for(var j = 0; j < track.artists.length; j++) {
     				artists.push(track.artists[j].name);
     			}
-    			console.log("Artist(s):\t" + artists);
-    			console.log("Name:\t\t" + track.name);
-    			console.log("Preview:\t" + track.preview_url);
-    			console.log("Album:\t\t" + track.album.name);
+    			log("Artist(s):\t" + artists + "\n"
+    			+ "Name:\t\t" + track.name + "\n"
+    			+ "Preview:\t" + track.preview_url + "\n"
+    			+ "Album:\t\t" + track.album.name + "\n");
     			return;
     		}
     	}
@@ -76,10 +80,10 @@ function spotifySong() {
 	    			for(var j = 0; j < track.artists.length; j++) {
 	    				artists.push(track.artists[j].name);
 	    			}
-	    			console.log("Artist(s):\t" + artists);
-	    			console.log("Name:\t\t" + track.name);
-	    			console.log("Preview:\t" + track.preview_url);
-	    			console.log("Album:\t\t" + track.album.name);
+	    			log("Artist(s):\t" + artists + "\n"
+	    			+ "Name:\t\t" + track.name + "\n"
+	    			+ "Preview:\t" + track.preview_url + "\n"
+	    			+ "Album:\t\t" + track.album.name + "\n");
 	    			return;
 	    		}
     		}
@@ -94,27 +98,35 @@ function movieThis() {
 		json: true 
 	};
 	Request(options, function (error, response, body) {
- 	 	console.log(body);
- 	 	console.log("Title:\t\t\t" + body.Title);
- 	 	console.log("Year:\t\t\t" + body.Year); 
- 	 	console.log("IMDB Rating:\t\t" + body.imdbRating);
- 	 	console.log("Country:\t\t" + body.Country);
- 	 	console.log("Language:\t\t" + body.Language);
- 	 	console.log("Plot:\t\t\t" + body.Plot);
- 	 	console.log("Actors:\t\t\t" + body.Actors);
- 	 	console.log("Rotten Tomatoes Rating:\t" + body.tomatoRating);
- 	 	console.log("Rotten Tomatoes URL:\t" + body.tomatoURL);
+ 	 	log("Title:\t\t\t" + body.Title + "\n"
+ 	 	+ "Year:\t\t\t" + body.Year + "\n" 
+ 	 	+ "IMDB Rating:\t\t" + body.imdbRating + "\n"
+ 	 	+ "Country:\t\t" + body.Country + "\n"
+ 	 	+ "Language:\t\t" + body.Language + "\n"
+ 	 	+ "Plot:\t\t\t" + body.Plot + "\n"
+ 	 	+ "Actors:\t\t\t" + body.Actors + "\n"
+ 	 	+ "Rotten Tomatoes Rating:\t" + body.tomatoRating + "\n"
+ 	 	+ "Rotten Tomatoes URL:\t" + body.tomatoURL + "\n");
 	});
 }
 function doIt() {
 	fs.readFile("random.txt", "utf8", function(err, data) {
-		console.log(data);
 		var comma = data.indexOf(",");
 		var command = data.substring(0, comma);
 		process.argv[3] = data.substring(comma + 1);
-		process.argv[3] = process.argv[3].replace(/\"/g, "");
-		//console.log(process.argv[3]);
+		var track = process.argv[3];
+		if(track[0] == "\"" && track[track.length-1] == "\"") {
+			process.argv[3] = track.substring(1, track.length-1);
+		}
 		commands(command);
 	});
 }
 
+function log(buffer) {
+	fs.appendFile("log.txt", buffer + "\n", function(err) {
+		if(!err) {
+			//console.log("ERROR");	
+		}
+		console.log(buffer);
+	});
+}
